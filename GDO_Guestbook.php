@@ -57,20 +57,20 @@ final class GDO_Guestbook extends GDO
 	/**
 	 * @return GDO_User
 	 */
-	public function getUser() { return $this->getValue('gb_uid'); }
+	public function getUser() { return $this->gdoValue('gb_uid'); }
 	public function getUserID() { return $this->gdoVar('gb_uid'); }
 	public function getTitle() { return $this->gdoVar('gb_title'); }
 	public function getDescr() { return $this->gdoVar('gb_descr'); }
 	public function getDate() { return $this->gdoVar('gb_date'); }
 	# Options
-	public function getLevel() { return $this->getValue('gb_level'); }
-	public function isLocked() { return !$this->getValue('gb_unlocked'); }
-	public function isModerated() { return $this->getValue('gb_moderated'); }
-	public function isGuestViewable() { return $this->getValue('gb_guest_view'); }
-	public function isGuestWriteable() { return $this->getValue('gb_guest_sign'); }
-	public function isURLAllowed() { return $this->getValue('gb_allow_url'); }
-	public function isEMailAllowed() { return $this->getValue('gb_allow_email'); }
-	public function isEMailOnSign() { return $this->getValue('gb_notify_mail'); }
+	public function getLevel() { return $this->gdoValue('gb_level'); }
+	public function isLocked() { return !$this->gdoValue('gb_unlocked'); }
+	public function isModerated() { return $this->gdoValue('gb_moderated'); }
+	public function isGuestViewable() { return $this->gdoValue('gb_guest_view'); }
+	public function isGuestWriteable() { return $this->gdoValue('gb_guest_sign'); }
+	public function isURLAllowed() { return $this->gdoValue('gb_allow_url'); }
+	public function isEMailAllowed() { return $this->gdoValue('gb_allow_email'); }
+	public function isEMailOnSign() { return $this->gdoValue('gb_notify_mail'); }
 	
 	##############
 	### Render ###

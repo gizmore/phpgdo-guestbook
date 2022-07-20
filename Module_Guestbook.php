@@ -191,7 +191,7 @@ final class Module_Guestbook extends GDO_Module
 	        {
 	            if ($gb->canView(GDO_User::current()))
 	            {
-	                $bar = GDT_Page::$INSTANCE->leftNav;
+	                $bar = GDT_Page::instance()->leftBar();
 	                $bar->addField(GDT_Link::make('link_guestbook')->href(href('Guestbook', 'View', '&id=1')));
 	            }
 	        }

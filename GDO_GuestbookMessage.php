@@ -56,23 +56,23 @@ final class GDO_GuestbookMessage extends GDO
     /**
      * @return GDO_User
      */
-    public function getUser() { return $this->getValue('gbm_user'); }
+    public function getUser() { return $this->gdoValue('gbm_user'); }
     public function getUserID() { return $this->gdoVar('gbm_user'); }
     /**
      * @return GDO_Guestbook
      */
-    public function getGuestbook() { return $this->getValue('gbm_guestbook'); }
+    public function getGuestbook() { return $this->gdoValue('gbm_guestbook'); }
     public function getGuestbookID() { return $this->gdoVar('gbm_guestbook'); }
     public function isApproved() { return $this->gdoVar('gbm_approved') !== null; }
     public function isDeleted() : bool { return $this->gdoVar('gbm_deleted') !== null; }
-    public function isEMailPublic() { return $this->getValue('gbm_email_public'); }
+    public function isEMailPublic() { return $this->gdoValue('gbm_email_public'); }
     
     ##############
     ### Render ###
     ##############
     public function displayMessage() { return $this->gdoColumn('gbm_message')->renderCell(); }
     public function displayEmail() { return $this->gdoColumn('gbm_email')->renderCell(); }
-    public function displayWebsite() { return $this->getValue('gbm_website') ? $this->gdoColumn('gbm_website')->renderCell() : ''; }
+    public function displayWebsite() { return $this->gdoValue('gbm_website') ? $this->gdoColumn('gbm_website')->renderCell() : ''; }
     public function renderList() { return GDT_Template::php('Guestbook', 'list/message.php', ['gdo' => $this]); }
     
     ############
