@@ -73,7 +73,7 @@ final class GDO_GuestbookMessage extends GDO
     public function displayMessage() { return $this->gdoColumn('gbm_message')->renderCell(); }
     public function displayEmail() { return $this->gdoColumn('gbm_email')->renderCell(); }
     public function displayWebsite() { return $this->gdoValue('gbm_website') ? $this->gdoColumn('gbm_website')->renderCell() : ''; }
-    public function renderList() { return GDT_Template::php('Guestbook', 'list/message.php', ['gdo' => $this]); }
+    public function renderList() : string { return GDT_Template::php('Guestbook', 'list/message.php', ['gdo' => $this]); }
     
     ############
     ### HREF ###
