@@ -10,7 +10,7 @@ use GDO\Core\GDT_CreatedAt;
 use GDO\Core\GDT_Checkbox;
 use GDO\User\GDO_User;
 use GDO\User\GDT_Level;
-use GDO\Core\GDT_Error;
+use GDO\UI\GDT_Error;
 
 /**
  * A Guestbook.
