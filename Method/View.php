@@ -4,6 +4,7 @@ namespace GDO\Guestbook\Method;
 use GDO\Table\MethodQueryList;
 use GDO\Guestbook\GDO_Guestbook;
 use GDO\Guestbook\GDO_GuestbookMessage;
+use GDO\Core\GDO;
 use GDO\Core\GDT_Object;
 use GDO\Core\GDT_Response;
 use GDO\User\GDO_User;
@@ -43,7 +44,7 @@ final class View extends MethodQueryList
     public function getGuestbook() { return $this->gdoParameterValue('id'); }
 //     public function getID() { return $this->gdoParameterVar('id'); }
     
-    public function onInit() : void
+    public function onInit()
     {
     	parent::onInit();
         if (!($this->guestbook = $this->getGuestbook()))
@@ -66,7 +67,7 @@ final class View extends MethodQueryList
             joinObject('gbm_user');
     }
     
-    public function gdoTable()
+    public function gdoTable() : GDO
     {
         return GDO_GuestbookMessage::table();
     }

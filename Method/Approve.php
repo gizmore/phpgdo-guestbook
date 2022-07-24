@@ -2,7 +2,7 @@
 namespace GDO\Guestbook\Method;
 
 use GDO\Core\Method;
-use GDO\DB\GDT_Token;
+use GDO\Core\GDT_Token;
 use GDO\Core\GDT_Object;
 use GDO\Guestbook\GDO_GuestbookMessage;
 use GDO\Date\Time;
@@ -54,7 +54,7 @@ final class Approve extends Method
         ));
         
         $href = href('Guestbook', 'ApproveList', '&id='.$message->getGuestbookID());
-        return $this->message('msg_gbm_approved')->addField(Website::redirect($href, 12));
+        return $this->message('msg_gbm_approved')->addField($this->redirect($href, 12));
     }
 
 }

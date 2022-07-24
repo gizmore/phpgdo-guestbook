@@ -13,8 +13,8 @@ use GDO\Date\GDT_DateTime;
 use GDO\Mail\GDT_Email;
 use GDO\Net\GDT_Url;
 use GDO\Core\GDT_Template;
-use GDO\DB\GDT_DeletedBy;
-use GDO\DB\GDT_DeletedAt;
+use GDO\Core\GDT_DeletedBy;
+use GDO\Core\GDT_DeletedAt;
 use GDO\Core\GDT_Checkbox;
 
 /**

@@ -5,6 +5,7 @@ use GDO\Table\MethodQueryList;
 use GDO\Guestbook\GDO_GuestbookMessage;
 use GDO\Admin\MethodAdmin;
 use GDO\Guestbook\Module_Guestbook;
+use GDO\Core\GDO;
 use GDO\Core\GDT_Object;
 use GDO\Guestbook\GDO_Guestbook;
 use GDO\User\GDO_User;
@@ -27,7 +28,7 @@ final class ApproveList extends MethodQueryList
         ));
     }
     
-    public function gdoTable()
+    public function gdoTable() : GDO
     {
         return GDO_GuestbookMessage::table();
     }

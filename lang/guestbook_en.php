@@ -51,7 +51,7 @@ return array(
 'gb_allow_url' => 'Allow users to post a website?',
 
 # Sign
-'ft_guestbook_sign' => 'Sign the guestbook',
+'mt_guestbook_sign' => 'Sign the guestbook',
 'gbm_email_public' => 'Show Email to the public?',
 'err_guestbook_sign' => 'You are not allowed to sign the guestbook.',
 'err_guestbook_locked' => 'The guestbook is currently disabled for writing messages.',

@@ -8,10 +8,11 @@ use GDO\Guestbook\Module_Guestbook;
 use GDO\Core\GDO;
 use GDO\Core\Website;
 use GDO\User\GDO_User;
-use GDO\User\PermissionException;
 use GDO\UI\GDT_Divider;
 use GDO\Admin\MethodAdmin;
 use GDO\UI\GDT_Page;
+use GDO\Core\GDO_Exception;
+use GDO\UI\GDT_Redirect;
 
 /**
  * Manage Guestbooks.
@@ -59,7 +60,7 @@ final class Crud extends MethodCrud
         return hrefDefault();
     }
 
-    public function gdoTable()
+    public function gdoTable() : GDO
     {
         return GDO_Guestbook::table();
     }
@@ -79,7 +80,7 @@ final class Crud extends MethodCrud
         return $gdo->getUser() === GDO_User::current();
     }
     
-    public function onInit() : void
+    public function onInit()
     {
         parent::onInit();
         
@@ -91,18 +92,18 @@ final class Crud extends MethodCrud
             {
                 if ($gb->getID() !== $this->getCRUDID())
                 {
-                    return Website::redirect(href('Guestbook', 'Crud', '&id=' . $gb->getID()));
+                    GDT_Redirect::to(href('Guestbook', 'Crud', '&id=' . $gb->getID()));
                 }
             }
             else
             {
                 if (!$mod->cfgAllowUserGB())
                 {
-                    throw new PermissionException('err_permission_create');
+                	throw new GDO_Exception('err_permission_create');
                 }
                 if ($mod->cfgLevel() > GDO_User::current()->getLevel())
                 {
-                    return $this->error('err_permission_create_level', [$mod->cfgLevel()]);
+                    $this->error('err_permission_create_level', [$mod->cfgLevel()]);
                 }
             }
         }
@@ -110,7 +111,7 @@ final class Crud extends MethodCrud
         {
             if (!$this->canUpdate($this->gdo))
             {
-                throw new PermissionException('err_permission_update');
+                throw new GDO_Exception('err_permission_update');
             }
         }
     }

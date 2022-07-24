@@ -103,7 +103,7 @@ final class Module_Guestbook extends GDO_Module
 	##############
 	### Config ###
 	##############
-	public function href_administrate_module() { return href('Guestbook', 'Admin'); }
+	public function href_administrate_module() : ?string { return href('Guestbook', 'Admin'); }
 
 	public function getConfig() : array
 	{

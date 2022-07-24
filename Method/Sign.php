@@ -37,7 +37,7 @@ final class Sign extends MethodForm
      */
     private $guestbook;
     
-    public function onInit() : void
+    public function onInit()
     {
         parent::onInit();
         
@@ -137,7 +137,7 @@ final class Sign extends MethodForm
             $this->sendNotificationMails($gb, $message);
         }
         
-        return $this->message('msg_gb_signed')->addField(Website::redirect($gb->href_gb_view(), 12));
+        return $this->message('msg_gb_signed')->addField($this->redirect($gb->href_gb_view(), 12));
     }
     
     ##################

@@ -5,7 +5,7 @@ use GDO\Core\Method;
 use GDO\Core\Website;
 use GDO\Core\GDT_Object;
 use GDO\Guestbook\GDO_GuestbookMessage;
-use GDO\DB\GDT_Token;
+use GDO\Core\GDT_Token;
 use GDO\Date\Time;
 use GDO\User\GDO_User;
 use GDO\Core\Application;
@@ -60,7 +60,7 @@ final class Delete extends Method
         ]);
         
         $href = href('Guestbook', 'ApproveList', '&id='.$msg->getGuestbookID());
-        return $this->message('msg_gbmsg_deleted')->addField(Website::redirect($href, 12));
+        return $this->message('msg_gbmsg_deleted')->addField($this->redirect($href, 12));
     }
     
 }
