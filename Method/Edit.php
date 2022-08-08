@@ -7,7 +7,7 @@ use GDO\Guestbook\GDO_GuestbookMessage;
 
 final class Edit extends MethodCrud
 {
-    public function hrefList()
+    public function hrefList() : string
     {
         return href('Guestbook', 'View', "id={$this->gdo->getID()}");
     }

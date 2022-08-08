@@ -55,7 +55,7 @@ final class Crud extends MethodCrud
         return parent::execute();
     }
     
-    public function hrefList()
+    public function hrefList() : string
     {
         return hrefDefault();
     }
