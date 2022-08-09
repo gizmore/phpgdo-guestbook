@@ -7,6 +7,7 @@ use GDO\Admin\MethodAdmin;
 use GDO\Guestbook\Module_Guestbook;
 use GDO\Core\GDO;
 use GDO\Core\GDT_Object;
+use GDO\DB\Query;
 use GDO\Guestbook\GDO_Guestbook;
 use GDO\User\GDO_User;
 
@@ -41,7 +42,7 @@ final class ApproveList extends MethodQueryList
         }
     }
     
-    public function getQuery()
+    public function getQuery() : Query
     {
         $query = parent::getQuery()->where('gbm_approved IS NULL')->where('gbm_deleted IS NULL');
         if ($gb = $this->getGuestbook())

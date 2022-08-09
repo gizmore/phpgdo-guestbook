@@ -6,7 +6,7 @@ use GDO\Guestbook\GDO_Guestbook;
 use GDO\Guestbook\GDO_GuestbookMessage;
 use GDO\Core\GDO;
 use GDO\Core\GDT_Object;
-use GDO\Core\GDT_Response;
+use GDO\DB\Query;
 use GDO\User\GDO_User;
 use GDO\UI\GDT_Card;
 use GDO\Guestbook\Module_Guestbook;
@@ -57,7 +57,7 @@ final class View extends MethodQueryList
         }
     }
     
-    public function getQuery()
+    public function getQuery() : Query
     {
         return $this->gdoTable()->
             select('gdo_guestbookmessage.*')->
