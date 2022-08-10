@@ -156,8 +156,8 @@ final class Sign extends MethodForm
     {
         $mail = Mail::botMail();
         $mail->setSubject(tusr($user, 'mail_subj_gb_moderate', [sitename()]));
-        $linkApprove = GDT_Link::make('btn_approve')->href($msg->hrefApprove())->renderCell();
-        $linkDelete = GDT_Link::make('btn_delete')->href($msg->hrefDelete())->renderCell();
+        $linkApprove = GDT_Link::make('btn_approve')->href($msg->hrefApprove())->renderHTML();
+        $linkDelete = GDT_Link::make('btn_delete')->href($msg->hrefDelete())->renderHTML();
         $args = [
             $user->renderUserName(),
             sitename(),
@@ -186,7 +186,7 @@ final class Sign extends MethodForm
     {
         $mail = Mail::botMail();
         $mail->setSubject(tusr($user, 'mail_subj_notify_gb', [sitename()]));
-        $linkDelete = GDT_Link::make('btn_delete')->href($msg->hrefDelete())->renderCell();
+        $linkDelete = GDT_Link::make('btn_delete')->href($msg->hrefDelete())->renderHTML();
         $args = [
             $user->renderUserName(),
             sitename(),
