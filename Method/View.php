@@ -14,8 +14,7 @@ use GDO\Table\GDT_Table;
 
 final class View extends MethodQueryList
 {
-    /** @var $guestbook GDO_Guestbook **/
-    private $guestbook;
+	private GDO_Guestbook $guestbook;
 
     public function getDefaultOrder() :?string { return 'gbm_created DESC'; }
     
@@ -46,7 +45,6 @@ final class View extends MethodQueryList
     
     public function onInit()
     {
-    	parent::onInit();
         if (!($this->guestbook = $this->getGuestbook()))
         {
             return $this->error('err_no_guestbook');
@@ -74,7 +72,7 @@ final class View extends MethodQueryList
 
     protected function setupTitle(GDT_Table $list)
     {
-        $list->title(t('list_view_guestbook', [$list->countItems()]));
+        $list->title('list_view_guestbook', [$list->countItems()]);
     }
     
     public function execute()
