@@ -66,7 +66,7 @@ final class ApproveList extends MethodQueryList
         {
             if (!$gb->canModerate(GDO_User::current()))
             {
-                return $this->error('err_no_permission');
+                return $this->error('err_permission_required');
             }
         }
         $mod = Module_Guestbook::instance();

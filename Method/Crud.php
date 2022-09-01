@@ -29,7 +29,7 @@ final class Crud extends MethodCrud
 {
     use MethodAdmin;
     
-    public function beforeExecute() : void
+    public function onRenderTabs() : void
     {
         if ($this->getCRUDID() === '1')
         {
