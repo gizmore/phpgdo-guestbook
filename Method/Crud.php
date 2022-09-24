@@ -44,10 +44,9 @@ final class Crud extends MethodCrud
         return $this->getCRUDID() === '1' ? 'staff' : null;
     }
     
-    
     public function execute()
     {
-        if ($this->gdo && ($this->gdo->getID() === '1'))
+        if (isset($this->gdo) && ($this->gdo->getID() === '1'))
         {
             $mod = Module_Guestbook::instance();
             GDT_Page::$INSTANCE->topBar()->addField($mod->adminBar());
@@ -119,7 +118,7 @@ final class Crud extends MethodCrud
     public function createForm(GDT_Form $form) : void
     {
         $mod = Module_Guestbook::instance();
-        $table = $this->gdo ? $this->gdo->table() : GDO_Guestbook::table();
+        $table = isset($this->gdo) ? $this->gdo->table() : GDO_Guestbook::table();
         
         $form->addField(GDT_Divider::make('div1')->label('div_gb_appearance'));
         $form->addField($table->gdoColumn('gb_title'));
