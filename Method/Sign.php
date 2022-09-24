@@ -14,7 +14,6 @@ use GDO\Guestbook\GDO_GuestbookMessage;
 use GDO\Date\Time;
 use GDO\Mail\Mail;
 use GDO\UI\GDT_Link;
-use GDO\Core\Website;
 
 /**
  * Sign a guestbook.
@@ -37,9 +36,9 @@ final class Sign extends MethodForm
      */
     private $guestbook;
     
-    public function onInit()
+    public function onMethodInit()
     {
-        parent::onInit();
+        parent::onMethodInit();
         
         if (!($this->guestbook = $this->getGuestbook()))
         {

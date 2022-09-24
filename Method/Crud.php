@@ -6,7 +6,6 @@ use GDO\Form\MethodCrud;
 use GDO\Guestbook\GDO_Guestbook;
 use GDO\Guestbook\Module_Guestbook;
 use GDO\Core\GDO;
-use GDO\Core\Website;
 use GDO\User\GDO_User;
 use GDO\UI\GDT_Divider;
 use GDO\Admin\MethodAdmin;
@@ -79,9 +78,9 @@ final class Crud extends MethodCrud
         return $gdo->getUser() === GDO_User::current();
     }
     
-    public function onInit()
+    public function onMethodInit()
     {
-        parent::onInit();
+        parent::onMethodInit();
         
         $mod = Module_Guestbook::instance();
         
