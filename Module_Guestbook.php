@@ -213,7 +213,7 @@ final class Module_Guestbook extends GDO_Module
 	{
 	    if ($gb = GDO_Guestbook::forUser($user))
 	    {
-	        $linkGuestbook = GDT_Link::make()->label('view_users_guestbook', [$user->renderUserName()])->href($gb->href_gb_view())->icon('book');
+	        $linkGuestbook = GDT_Link::make()->text('view_users_guestbook', [$user->renderUserName()])->href($gb->href_gb_view())->icon('book');
 	        $card->addLabel('link_guestbook');
 	        $card->addField($linkGuestbook);
 
