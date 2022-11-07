@@ -12,6 +12,7 @@ use GDO\Admin\MethodAdmin;
 use GDO\UI\GDT_Page;
 use GDO\Core\GDO_Exception;
 use GDO\UI\GDT_Redirect;
+use GDO\Captcha\GDT_Captcha;
 
 /**
  * Manage Guestbooks.
@@ -152,7 +153,11 @@ final class Crud extends MethodCrud
             $form->addField($table->gdoColumn('gb_allow_url'));
         }
         
-        $this->createCaptcha($form);
+        if ($this->isCaptchaRequired())
+        {
+        	$form->addField(GDT_Captcha::make());
+        }
+        
         $this->createFormButtons($form);
     }
     
