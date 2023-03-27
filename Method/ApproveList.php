@@ -3,6 +3,7 @@ namespace GDO\Guestbook\Method;
 
 use GDO\Admin\MethodAdmin;
 use GDO\Core\GDO;
+use GDO\Core\GDT;
 use GDO\Core\GDT_Object;
 use GDO\DB\Query;
 use GDO\Guestbook\GDO_Guestbook;
@@ -54,7 +55,7 @@ final class ApproveList extends MethodQueryList
 		return $this->gdoParameterValue('id');
 	}
 
-	public function execute()
+	public function execute(): GDT
 	{
 		if ($gb = $this->getGuestbook())
 		{

@@ -5,6 +5,7 @@ use GDO\Admin\MethodAdmin;
 use GDO\Captcha\GDT_Captcha;
 use GDO\Core\GDO;
 use GDO\Core\GDO_Exception;
+use GDO\Core\GDT;
 use GDO\Form\GDT_Form;
 use GDO\Form\MethodCrud;
 use GDO\Guestbook\GDO_Guestbook;
@@ -45,7 +46,7 @@ final class Crud extends MethodCrud
 
 	public function isUserRequired(): bool { return false; }
 
-	public function execute()
+	public function execute(): GDT
 	{
 		if (isset($this->gdo) && ($this->gdo->getID() === '1'))
 		{
@@ -65,7 +66,7 @@ final class Crud extends MethodCrud
 		return GDO_Guestbook::table();
 	}
 
-	public function canUpdate(GDO $gdo)
+	public function canUpdate(GDO $gdo): bool
 	{
 		if ($gdo->getID() === '1')
 		{
@@ -80,7 +81,7 @@ final class Crud extends MethodCrud
 		return $gdo->getUser() === GDO_User::current();
 	}
 
-	public function onMethodInit()
+	public function onMethodInit(): ?GDT
 	{
 		parent::onMethodInit();
 
@@ -114,6 +115,8 @@ final class Crud extends MethodCrud
 				throw new GDO_Exception('err_permission_update');
 			}
 		}
+
+		return null;
 	}
 
 	public function createForm(GDT_Form $form): void
@@ -162,12 +165,12 @@ final class Crud extends MethodCrud
 		$this->createFormButtons($form);
 	}
 
-	public function beforeCreate(GDT_Form $form, GDO $gdo)
+	public function beforeCreate(GDT_Form $form, GDO $gdo): void
 	{
 		$gdo->setVar('gb_uid', GDO_User::current()->getID());
 	}
 
-	public function afterCreate(GDT_Form $form, GDO $gdo)
+	public function afterCreate(GDT_Form $form, GDO $gdo): void
 	{
 		Module_Guestbook::instance()->saveSetting('user_guestbook', $gdo->getID());
 	}

@@ -2,6 +2,7 @@
 namespace GDO\Guestbook\Method;
 
 use GDO\Core\GDO;
+use GDO\Core\GDT;
 use GDO\Core\GDT_Object;
 use GDO\DB\Query;
 use GDO\Guestbook\GDO_Guestbook;
@@ -38,7 +39,7 @@ final class View extends MethodQueryList
 		];
 	}
 
-	public function onMethodInit()
+	public function onMethodInit(): ?GDT
 	{
 		if (!($this->guestbook = $this->getGuestbook()))
 		{
@@ -72,12 +73,12 @@ final class View extends MethodQueryList
 		return GDO_GuestbookMessage::table();
 	}
 
-	protected function setupTitle(GDT_Table $list)
+	protected function setupTitle(GDT_Table $table): void
 	{
-		$list->title('list_view_guestbook', [$list->countItems()]);
+		$table->title('list_view_guestbook', [$table->countItems()]);
 	}
 
-	public function execute()
+	public function execute(): GDT
 	{
 		$gb = $this->guestbook;
 		$mod = Module_Guestbook::instance();

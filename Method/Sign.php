@@ -2,6 +2,7 @@
 namespace GDO\Guestbook\Method;
 
 use GDO\Captcha\GDT_Captcha;
+use GDO\Core\GDT;
 use GDO\Core\GDT_Object;
 use GDO\Date\Time;
 use GDO\Form\GDT_AntiCSRF;
@@ -37,7 +38,7 @@ final class Sign extends MethodForm
 	 */
 	private $guestbook;
 
-	public function onMethodInit()
+	public function onMethodInit(): ?GDT
 	{
 		parent::onMethodInit();
 
@@ -51,6 +52,8 @@ final class Sign extends MethodForm
 		{
 			return $errorResponse;
 		}
+
+		return null;
 	}
 
 	##############
@@ -107,7 +110,7 @@ final class Sign extends MethodForm
 	###############
 	### Execute ###
 	###############
-	public function formValidated(GDT_Form $form)
+	public function formValidated(GDT_Form $form): GDT
 	{
 		$gb = $this->guestbook;
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace GDO\Guestbook;
 
 use GDO\Core\GDO_Module;
@@ -17,7 +18,7 @@ use GDO\User\GDT_Level;
  * Creates one global site guestbook.
  * Optionally allow users to create their own guestbook.
  *
- * @version 7.0.0
+ * @version 7.0.3
  * @since 3.0.0
  *
  * @author gizmore
@@ -74,13 +75,10 @@ final class Module_Guestbook extends GDO_Module
 		];
 	}
 
-	public function getUserConfig()
+	public function getUserConfig(): array
 	{
 		$config = [];
-// 	    if ($this->cfgAllowUserGB())
-// 	    {
 		$config[] = GDT_Object::make('user_guestbook')->table(GDO_Guestbook::table());
-// 	    }
 		return $config;
 	}
 
@@ -88,7 +86,7 @@ final class Module_Guestbook extends GDO_Module
 	### Config ###
 	##############
 
-	public function getUserSettings()
+	public function getUserSettings(): array
 	{
 		$config = [];
 		if ($this->cfgAllowUserGB())
@@ -114,7 +112,7 @@ final class Module_Guestbook extends GDO_Module
 	 */
 	public function getUserGuestbook(GDO_User $user = null)
 	{
-		$user = $user ? $user : GDO_User::current();
+		$user = $user ?: GDO_User::current();
 		return self::instance()->userSettingValue($user, 'user_guestbook');
 	}
 
