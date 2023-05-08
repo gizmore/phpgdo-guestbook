@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 namespace GDO\Guestbook\Method;
 
 use GDO\Core\GDO;
+use GDO\Core\GDO_ArgError;
 use GDO\Core\GDT;
 use GDO\Core\GDT_Object;
 use GDO\DB\Query;
@@ -13,6 +15,12 @@ use GDO\Table\MethodQueryList;
 use GDO\UI\GDT_Card;
 use GDO\User\GDO_User;
 
+
+/**
+ * View a page messages from a guestbook.
+ *
+ * @version 7.0.3
+ */
 final class View extends MethodQueryList
 {
 
@@ -41,22 +49,31 @@ final class View extends MethodQueryList
 
 	public function onMethodInit(): ?GDT
 	{
-		if (!($this->guestbook = $this->getGuestbook()))
-		{
-			return $this->error('err_no_guestbook');
-		}
-		if (!$this->guestbook->canView(GDO_User::current()))
-		{
-			return $this->error('err_permission_read');
-		}
+		$this->guestbook = $this->getGuestbook();
+		return null;
 	}
 
-//     public function getID() { return $this->gdoParameterVar('id'); }
+	public function hasPermission(GDO_User $user, string &$error, array &$args): bool
+	{
+		if (!isset($this->guestbook))
+		{
+			$error = 'err_no_gb';
+		}
+		elseif (!$this->guestbook->canView($user))
+		{
+			$error = 'err_permission_read';
+		}
+		return !$error;
+	}
 
 	/**
-	 * @return GDO_Guestbook
+	 * @throws GDO_ArgError
 	 */
-	public function getGuestbook() { return $this->gdoParameterValue('id'); }
+	public function getGuestbook(): GDO_Guestbook
+	{
+		return $this->gdoParameterValue('id');
+	}
+
 
 	public function getQuery(): Query
 	{
@@ -89,7 +106,7 @@ final class View extends MethodQueryList
 		if ($this->getPage() === '1')
 		{
 			$card = GDT_Card::make('gbcard')->gdo($gb);
-			$card->title($gb->gdoColumn('gb_title'));
+			$card->titleRaw($gb->gdoColumn('gb_title')->render());
 			if ($gb->getID() !== '1')
 			{
 				$card->creatorHeader(null, 'gb_uid');

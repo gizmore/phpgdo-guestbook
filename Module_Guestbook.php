@@ -5,7 +5,6 @@ namespace GDO\Guestbook;
 use GDO\Core\GDO_Module;
 use GDO\Core\GDT_Checkbox;
 use GDO\Core\GDT_Object;
-use GDO\Core\GDT_Response;
 use GDO\Core\GDT_UInt;
 use GDO\UI\GDT_Bar;
 use GDO\UI\GDT_Card;
@@ -14,9 +13,13 @@ use GDO\UI\GDT_Page;
 use GDO\User\GDO_User;
 use GDO\User\GDT_Level;
 
+
 /**
- * Creates one global site guestbook.
- * Optionally allow users to create their own guestbook.
+ * Guestbooks for a gdo site and optionally members.
+ *
+ * - Captcha options
+ * - Guest options
+ * - more...
  *
  * @version 7.0.3
  * @since 3.0.0
@@ -41,7 +44,12 @@ final class Module_Guestbook extends GDO_Module
 
 	public function onLoadLanguage(): void { $this->loadLanguage('lang/guestbook'); }
 
-	public function getDependencies(): array { return ['Admin']; }
+	public function getDependencies(): array
+	{
+		return [
+			'Admin',
+		];
+	}
 
 	public function getClasses(): array
 	{
@@ -56,6 +64,15 @@ final class Module_Guestbook extends GDO_Module
 	#############
 	### Admin ###
 	#############
+
+	public function getFriendencies(): array
+	{
+		return [
+			'Captcha',
+			'HTML',
+			'Markdown',
+		];
+	}
 
 	public function getConfig(): array
 	{
@@ -103,14 +120,13 @@ final class Module_Guestbook extends GDO_Module
 		return $config;
 	}
 
-	public function cfgAllowUserGB() { return $this->getConfigValue('gb_allow_user_gb'); }
+	public function cfgAllowUserGB(): bool
+	{
+		return GDO_User::current()->isMember() ?
+			$this->getConfigValue('gb_allow_user_gb') : false;
+	}
 
-	/**
-	 * @param GDO_User $user
-	 *
-	 * @return GDO_Guestbook
-	 */
-	public function getUserGuestbook(GDO_User $user = null)
+	public function getUserGuestbook(GDO_User $user = null): ?GDO_Guestbook
 	{
 		$user = $user ?: GDO_User::current();
 		return self::instance()->userSettingValue($user, 'user_guestbook');
@@ -118,7 +134,7 @@ final class Module_Guestbook extends GDO_Module
 
 	public function onInitSidebar(): void
 	{
-// 	    if ($this->cfgLeftBar())
+ 	    if ($this->cfgLeftBar())
 		{
 			if ($gb = $this->getSiteGuestbook())
 			{
@@ -129,7 +145,7 @@ final class Module_Guestbook extends GDO_Module
 				}
 			}
 		}
-// 	    if ($this->cfgRightBar())
+ 	    if ($this->cfgRightBar())
 		{
 			if ($this->cfgAllowUserGB())
 			{
@@ -142,18 +158,12 @@ final class Module_Guestbook extends GDO_Module
 		}
 	}
 
-	/**
-	 * @return GDO_Guestbook
-	 */
-	public function getSiteGuestbook()
+	public function getSiteGuestbook(): ?GDO_Guestbook
 	{
-		if ($this->isInstalled())
-		{
-			return GDO_Guestbook::getById('1');
-		}
+		return $this->isInstalled() ? GDO_Guestbook::getById('1') : null;
 	}
 
-	public function guestbookViewBar(GDO_Guestbook $gb = null)
+	public function guestbookViewBar(GDO_Guestbook $gb = null): GDT_Bar
 	{
 		if (!$gb)
 		{
@@ -173,10 +183,10 @@ final class Module_Guestbook extends GDO_Module
 			$linkApproval = GDT_Link::make('link_gb_approval_list')->enabled($gb->canModerate($user))->href($gb->href_gb_approval());
 			$bar->addField($linkApproval);
 		}
-		return GDT_Response::makeWith($bar);
+		return $bar;
 	}
 
-	public function adminBar()
+	public function adminBar(): GDT_Bar
 	{
 		$bar = GDT_Bar::make()->horizontal();
 
@@ -189,52 +199,55 @@ final class Module_Guestbook extends GDO_Module
 		$linkConfig = GDT_Link::make('link_configure_gb_module')->href(href('Admin', 'Configure', '&module=Guestbook'));
 		$bar->addField($linkConfig);
 
-		return GDT_Response::makeWith($bar);
+		return $bar;
 	}
 
-	public function cfgItemsPerPage() { return $this->getConfigValue('gb_ipp'); }
+	public function cfgItemsPerPage(): int { return $this->getConfigValue('gb_ipp'); }
 
-	public function cfgAllowGuestView() { return $this->getConfigValue('gb_allow_guest_view'); }
+	public function cfgAllowGuestView(): bool { return $this->getConfigValue('gb_allow_guest_view'); }
 
-	public function cfgAllowGuestSign() { return $this->getConfigValue('gb_allow_guest_sign'); }
+	public function cfgAllowGuestSign(): bool { return $this->getConfigValue('gb_allow_guest_sign'); }
 
-	public function cfgAllowURL() { return $this->getConfigValue('gb_allow_url'); }
+	public function cfgAllowURL(): bool { return $this->getConfigValue('gb_allow_url'); }
 
-	public function cfgAllowEMail() { return $this->getConfigValue('gb_allow_email'); }
+	public function cfgAllowEMail(): bool { return $this->getConfigValue('gb_allow_email'); }
 
-	public function cfgAllowgLevel() { return $this->getConfigValue('gb_allow_level'); }
+	public function cfgAllowgLevel(): bool { return $this->getConfigValue('gb_allow_level'); }
 
-	public function cfgLevel() { return $this->getConfigValue('gb_user_gb_level'); }
+	public function cfgLevel(): int { return $this->getConfigValue('gb_user_gb_level'); }
 
-	public function cfgLeftBar() { return $this->getConfigValue('gb_left_bar'); }
+	public function cfgLeftBar(): bool { return $this->getConfigValue('gb_left_bar'); }
 
-	################
-	### Settings ###
-	################
+	public function cfgRightBar(): bool { return $this->getConfigValue('gb_right_bar'); }
 
-	public function cfgRightBar() { return $this->getConfigValue('gb_right_bar'); }
-
-	public function cfgCaptcha()
+	public function cfgCaptcha(): bool
 	{
 		$user = GDO_User::current();
 		return $user->isMember() ? $this->cfgMemberCaptcha() : $this->cfgGuestCaptcha();
 	}
 
-	public function cfgMemberCaptcha() { return $this->getConfigValue('gb_member_captcha'); }
+	public function cfgMemberCaptcha(): bool
+	{
+		return module_enabled('Captcha') &&
+			$this->getConfigValue('gb_member_captcha');
+	}
 
-	############
-	### Hook ###
-	############
+	public function cfgGuestCaptcha(): bool
+	{
+		return module_enabled('Captcha') &&
+			$this->getConfigValue('gb_guest_captcha');
+	}
 
-	public function cfgGuestCaptcha() { return $this->getConfigValue('gb_guest_captcha'); }
-
-	public function hookProfileCard(GDO_User $user, GDT_Card $card)
+	/**
+	 * Add a guestbook link to profiles via a hook
+	 */
+	public function hookProfileCard(GDO_User $user, GDT_Card $card): void
 	{
 		if ($gb = GDO_Guestbook::forUser($user))
 		{
-			$linkGuestbook = GDT_Link::make()->text('view_users_guestbook', [$user->renderUserName()])->href($gb->href_gb_view())->icon('book');
-			$card->addLabel('link_guestbook');
-			$card->addField($linkGuestbook);
+			$card->addField(GDT_Link::make('link_guestbook')->
+				text('view_users_guestbook', [$user->renderUserName()])->
+				href($gb->href_gb_view())->icon('book'));
 		}
 	}
 

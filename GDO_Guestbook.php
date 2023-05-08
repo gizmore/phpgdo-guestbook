@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace GDO\Guestbook;
 
 use GDO\Core\GDO;
@@ -16,8 +17,8 @@ use GDO\User\GDT_User;
  * A Guestbook.
  * Mutliple guestbooks are possible. (one per user)
  *
- * @version 6.10
- * @since 3.00
+ * @version 7.0.3
+ * @since 3.0.0
  * @author gizmore
  */
 final class GDO_Guestbook extends GDO
@@ -26,11 +27,11 @@ final class GDO_Guestbook extends GDO
 	###############
 	### Factory ###
 	###############
-	public static function forSite() { return self::getById('1'); }
+	public static function forSite(): ?GDO_Guestbook { return self::getById('1'); }
 
-	public static function forUser(GDO_User $user) { return self::forUserID($user->getID()); }
+	public static function forUser(GDO_User $user): ?GDO_Guestbook { return self::forUserID($user->getID()); }
 
-	public static function forUserID($userid) { return self::getBy('gb_uid', $userid); }
+	public static function forUserID(string $userid): ?GDO_Guestbook { return self::getBy('gb_uid', $userid); }
 
 	###########
 	### GDO ###
@@ -58,33 +59,33 @@ final class GDO_Guestbook extends GDO
 	### Convinient ###
 	##################
 
-	public function getDescr() { return $this->gdoVar('gb_descr'); }
+	public function getDescr(): ?string { return $this->gdoVar('gb_descr'); }
 
-	public function getDate() { return $this->gdoVar('gb_date'); }
+	public function getDate(): ?string { return $this->gdoVar('gb_date'); }
 
-	public function isModerated() { return $this->gdoValue('gb_moderated'); }
+	public function isModerated(): bool { return $this->gdoValue('gb_moderated'); }
 
-	public function isURLAllowed() { return $this->gdoValue('gb_allow_url'); }
+	public function isURLAllowed(): bool { return $this->gdoValue('gb_allow_url'); }
 
-	public function isEMailAllowed() { return $this->gdoValue('gb_allow_email'); }
+	public function isEMailAllowed(): bool { return $this->gdoValue('gb_allow_email'); }
 
 	# Options
 
-	public function isEMailOnSign() { return $this->gdoValue('gb_notify_mail'); }
+	public function isEMailOnSign(): bool { return $this->gdoValue('gb_notify_mail'); }
 
-	public function displayTitle() { return html($this->getTitle()); }
+	public function displayTitle(): string { return html($this->getTitle()); }
 
-	public function getTitle() { return $this->gdoVar('gb_title'); }
+	public function getTitle(): ?string { return $this->gdoVar('gb_title'); }
 
-	public function displayDescription() { return $this->gdoColumn('gb_descr')->renderHTML(); }
+	public function displayDescription(): string { return $this->gdoColumn('gb_descr')->renderHTML(); }
 
-	public function href_gb_edit() { return href('Guestbook', 'Crud', '&id=' . $this->getID()); }
+	public function href_gb_edit(): string { return href('Guestbook', 'Crud', '&id=' . $this->getID()); }
 
-	public function href_gb_view() { return href('Guestbook', 'View', '&id=' . $this->getID()); }
+	public function href_gb_view(): string { return href('Guestbook', 'View', '&id=' . $this->getID()); }
 
-	public function href_gb_sign() { return href('Guestbook', 'Sign', '&id=' . $this->getID()); }
+	public function href_gb_sign(): string { return href('Guestbook', 'Sign', '&id=' . $this->getID()); }
 
-	public function href_gb_approval() { return href('Guestbook', 'ApproveList', '&id=' . $this->getID()); }
+	public function href_gb_approval(): string { return href('Guestbook', 'ApproveList', '&id=' . $this->getID()); }
 
 	##############
 	### Render ###
@@ -95,7 +96,7 @@ final class GDO_Guestbook extends GDO
 	 *
 	 * @return GDO_User[]
 	 */
-	public function getNotifyUsers()
+	public function getNotifyUsers(): array
 	{
 		$users = GDO_User::staff();
 		if ($user = $this->getUser())
@@ -108,34 +109,31 @@ final class GDO_Guestbook extends GDO
 		return $users;
 	}
 
-	/**
-	 * @return GDO_User
-	 */
-	public function getUser() { return $this->gdoValue('gb_uid'); }
+	public function getUser(): GDO_User { return $this->gdoValue('gb_uid'); }
 
 	#############
 	### HREFs ###
 	#############
 
-	public function canCreate(GDO_User $user)
+	public function canCreate(GDO_User $user): bool
 	{
 		return $user->isAuthenticated() && ($user->getLevel() >= Module_Guestbook::instance()->cfgLevel());
 	}
 
-	public function getLevel() { return $this->gdoValue('gb_level'); }
+	public function getLevel(): int { return $this->gdoValue('gb_level'); }
 
-	public function canModerate(GDO_User $user)
+	public function canModerate(GDO_User $user): bool
 	{
 		return $user->isStaff() || ($user->getID() === $this->getUserID());
 	}
 
-	public function getUserID() { return $this->gdoVar('gb_uid'); }
+	public function getUserID(): ?string { return $this->gdoVar('gb_uid'); }
 
 	##############
 	### Notify ###
 	##############
 
-	public function canView(GDO_User $user)
+	public function canView(GDO_User $user): bool
 	{
 		if ($user->isMember())
 		{
@@ -155,41 +153,39 @@ final class GDO_Guestbook extends GDO
 	### Permission ###
 	##################
 
-	public function isGuestViewable() { return $this->gdoValue('gb_guest_view'); }
+	public function isGuestViewable(): bool { return $this->gdoValue('gb_guest_view'); }
 
-	public function canSign(GDO_User $user, &$errorResponse = null)
+	public function canSign(GDO_User $user, string &$error = '', array &$args = []): bool
 	{
 		$mod = Module_Guestbook::instance();
 
 		if ($this->isLocked())
 		{
-			$errorResponse = GDT_Error::responseWith('err_guestbook_locked');
-			return false;
+			$error = 'err_guestbook_locked';
 		}
 
-		if (!$user->isMember())
+		elseif (!$user->isMember())
 		{
 			if ((!$mod->cfgAllowGuestSign()) || (!$this->isGuestWriteable()))
 			{
-				$errorResponse = GDT_Error::responseWith('err_no_guests');
-				return false;
+				$error = 'err_no_guests';
 			}
 		}
 
-		if ($mod->cfgAllowgLevel())
+		elseif ($mod->cfgAllowgLevel())
 		{
 			if ($this->getLevel() > $user->getLevel())
 			{
-				$errorResponse = GDT_Error::responseWith('err_level_too_low', [$this->getLevel(), $user->getLevel()]);
-				return false;
+				$error = 'err_level_too_low';
+				$args = [$this->getLevel(), $user->getLevel()];
 			}
 		}
 
-		return true;
+		return !$error;
 	}
 
-	public function isLocked() { return !$this->gdoValue('gb_unlocked'); }
+	public function isLocked(): bool { return !$this->gdoValue('gb_unlocked'); }
 
-	public function isGuestWriteable() { return $this->gdoValue('gb_guest_sign'); }
+	public function isGuestWriteable(): bool { return $this->gdoValue('gb_guest_sign'); }
 
 }

@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 namespace GDO\Guestbook\Method;
 
 use GDO\Captcha\GDT_Captcha;
+use GDO\Core\GDO_ArgError;
+use GDO\Core\GDO_DBException;
 use GDO\Core\GDT;
 use GDO\Core\GDT_Object;
 use GDO\Date\Time;
@@ -20,7 +23,7 @@ use GDO\User\GDO_User;
  * Sign a guestbook.
  * Sends notification and moderation mails.
  *
- * @version 6.10.1
+ * @version 7.0.3
  * @since 3.2.0
  *
  * @author gizmore
@@ -30,30 +33,24 @@ use GDO\User\GDO_User;
 final class Sign extends MethodForm
 {
 
+
 	############
 	### Init ###
 	############
-	/**
-	 * @var GDO_Guestbook
-	 */
-	private $guestbook;
+	private GDO_Guestbook $guestbook;
 
-	public function onMethodInit(): ?GDT
+
+	public function hasPermission(GDO_User $user, string &$error, array &$args): bool
 	{
-		parent::onMethodInit();
-
-		if (!($this->guestbook = $this->getGuestbook()))
+		if (!($gb = $this->getGuestbook()))
 		{
-			return $this->error('err_no_guestbook');
+			$error = 'err_no_guestbook';
 		}
-
-		$errorResponse = null;
-		if (!$this->guestbook->canSign(GDO_User::current(), $errorResponse))
+		else
 		{
-			return $errorResponse;
+			$gb->canSign($user, $error, $args);
 		}
-
-		return null;
+		return !$error;
 	}
 
 	##############
@@ -61,11 +58,15 @@ final class Sign extends MethodForm
 	##############
 
 	/**
-	 * @return GDO_Guestbook
+	 * @throws GDO_ArgError
 	 */
-	public function getGuestbook()
+	public function getGuestbook(): ?GDO_Guestbook
 	{
-		return $this->gdoParameterValue('id');
+		if (!isset($this->guestbook))
+		{
+			$this->guestbook = $this->gdoParameterValue('id');
+		}
+		return $this->guestbook;
 	}
 
 	public function gdoParameters(): array
@@ -79,14 +80,18 @@ final class Sign extends MethodForm
 	### Form ###
 	############
 
+	/**
+	 * @throws GDO_ArgError
+	 */
 	protected function createForm(GDT_Form $form): void
 	{
-		$gb = $this->guestbook;
+		$gb = $this->getGuestbook();
+
 		$mod = Module_Guestbook::instance();
 		$table = GDO_GuestbookMessage::table();
 
 		$form->addField($table->gdoColumn('gbm_email'));
-		if ($mod->cfgAllowEMail() && $gb->isEMailAllowed())
+		if ($mod->cfgAllowEMail() && $gb && $gb->isEMailAllowed())
 		{
 			$form->addField($table->gdoColumn('gbm_email_public'));
 		}
@@ -110,6 +115,9 @@ final class Sign extends MethodForm
 	###############
 	### Execute ###
 	###############
+	/**
+	 * @throws GDO_DBException
+	 */
 	public function formValidated(GDT_Form $form): GDT
 	{
 		$gb = $this->guestbook;
@@ -148,7 +156,7 @@ final class Sign extends MethodForm
 	##################
 	### Moderation ###
 	##################
-	private function sendModerationMails(GDO_Guestbook $gb, GDO_GuestbookMessage $msg)
+	private function sendModerationMails(GDO_Guestbook $gb, GDO_GuestbookMessage $msg): void
 	{
 		$users = $gb->getNotifyUsers();
 		foreach ($users as $user)
@@ -157,7 +165,7 @@ final class Sign extends MethodForm
 		}
 	}
 
-	private function sendModerationMail(GDO_Guestbook $gb, GDO_GuestbookMessage $msg, GDO_User $user)
+	private function sendModerationMail(GDO_Guestbook $gb, GDO_GuestbookMessage $msg, GDO_User $user): void
 	{
 		$mail = Mail::botMail();
 		$mail->setSubject(tusr($user, 'mail_subj_gb_moderate', [sitename()]));
@@ -178,7 +186,7 @@ final class Sign extends MethodForm
 	##############
 	### Notify ###
 	##############
-	private function sendNotificationMails(GDO_Guestbook $gb, GDO_GuestbookMessage $msg)
+	private function sendNotificationMails(GDO_Guestbook $gb, GDO_GuestbookMessage $msg): void
 	{
 		$users = $gb->getNotifyUsers();
 		foreach ($users as $user)
@@ -187,7 +195,7 @@ final class Sign extends MethodForm
 		}
 	}
 
-	private function sendNotificationMail(GDO_Guestbook $gb, GDO_GuestbookMessage $msg, GDO_User $user)
+	private function sendNotificationMail(GDO_Guestbook $gb, GDO_GuestbookMessage $msg, GDO_User $user): void
 	{
 		$mail = Mail::botMail();
 		$mail->setSubject(tusr($user, 'mail_subj_notify_gb', [sitename()]));

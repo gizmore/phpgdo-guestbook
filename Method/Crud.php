@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace GDO\Guestbook\Method;
 
 use GDO\Admin\MethodAdmin;
@@ -19,8 +20,8 @@ use GDO\User\GDO_User;
  * Manage Guestbooks.
  * Every user may have at max 1 guestbook.
  *
- * @version 6.10
- * @since 6.10
+ * @version 7.0.3
+ * @since 6.0.10
  *
  * @author gizmore
  * @see GDO_Guestbook
@@ -44,7 +45,15 @@ final class Crud extends MethodCrud
 		return $this->getCRUDID() === '1' ? 'staff' : null;
 	}
 
-	public function isUserRequired(): bool { return false; }
+	public function isUserRequired(): bool
+	{
+		return true;
+	}
+
+	public function isGuestAllowed(): bool
+	{
+		return false;
+	}
 
 	public function execute(): GDT
 	{
@@ -66,63 +75,73 @@ final class Crud extends MethodCrud
 		return GDO_Guestbook::table();
 	}
 
-	public function canUpdate(GDO $gdo): bool
+	public function canCreate(GDO|GDO_Guestbook $gdo): bool
+	{
+		return Module_Guestbook::instance()->cfgAllowUserGB();
+	}
+
+	public function canRead(GDO|GDO_Guestbook $gdo): bool
+	{
+		return true;
+	}
+
+	public function canUpdate(GDO|GDO_Guestbook $gdo): bool
 	{
 		if ($gdo->getID() === '1')
 		{
 			return GDO_User::current()->isStaff();
 		}
-
 		if (GDO_User::current()->isStaff())
 		{
 			return true;
 		}
-
 		return $gdo->getUser() === GDO_User::current();
 	}
 
-	public function onMethodInit(): ?GDT
+	public function canDelete(GDO|GDO_Guestbook $gdo): bool
 	{
-		parent::onMethodInit();
+		return $this->canUpdate($gdo);
+	}
+
+	public function hasPermission(GDO_User $user, string &$error, array &$args): bool
+	{
+		parent::hasPermission($user, $error, $args);
 
 		$mod = Module_Guestbook::instance();
-
 		if ($this->getCRUDID() !== '1')
 		{
 			if ($gb = $mod->getUserGuestbook())
 			{
 				if ($gb->getID() !== $this->getCRUDID())
 				{
-					GDT_Redirect::to(href('Guestbook', 'Crud', '&id=' . $gb->getID()));
+					$error = 'err_permission_read';
+					GDT_Redirect::to($gb->href_gb_edit());
 				}
 			}
 			else
 			{
 				if (!$mod->cfgAllowUserGB())
 				{
-					throw new GDO_Exception('err_permission_create');
+					$error = 'err_permission_create';
 				}
 				if ($mod->cfgLevel() > GDO_User::current()->getLevel())
 				{
-					$this->error('err_permission_create_level', [$mod->cfgLevel()]);
+					$error = 'err_permission_create_level';
+					$args = [$mod->cfgLevel()];
 				}
 			}
 		}
-		else
+		elseif (!$this->canUpdate($this->gdo))
 		{
-			if (!$this->canUpdate($this->gdo))
-			{
-				throw new GDO_Exception('err_permission_update');
-			}
+			$error = 'err_permission_update';
 		}
-
-		return null;
+		return !$error;
 	}
 
 	protected function createForm(GDT_Form $form): void
 	{
 		$mod = Module_Guestbook::instance();
-		$table = isset($this->gdo) ? $this->gdo->table() : GDO_Guestbook::table();
+		$table = $this->gdoTable();
 
 		$form->addField(GDT_Divider::make('div1')->label('div_gb_appearance'));
 		$form->addField($table->gdoColumn('gb_title'));
@@ -159,7 +178,10 @@ final class Crud extends MethodCrud
 
 		if ($this->isCaptchaRequired())
 		{
-			$form->addField(GDT_Captcha::make());
+			if (module_enabled('Captcha'))
+			{
+				$form->addField(GDT_Captcha::make());
+			}
 		}
 
 		$this->createFormButtons($form);
