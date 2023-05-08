@@ -119,7 +119,7 @@ final class Crud extends MethodCrud
 		return null;
 	}
 
-	public function createForm(GDT_Form $form): void
+	protected function createForm(GDT_Form $form): void
 	{
 		$mod = Module_Guestbook::instance();
 		$table = isset($this->gdo) ? $this->gdo->table() : GDO_Guestbook::table();

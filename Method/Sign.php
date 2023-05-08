@@ -79,7 +79,7 @@ final class Sign extends MethodForm
 	### Form ###
 	############
 
-	public function createForm(GDT_Form $form): void
+	protected function createForm(GDT_Form $form): void
 	{
 		$gb = $this->guestbook;
 		$mod = Module_Guestbook::instance();
