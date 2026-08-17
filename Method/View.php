@@ -75,7 +75,7 @@ final class View extends MethodQueryList
 	}
 
 
-	public function getQuery(): Query
+	public function gdoQuery(): Query
 	{
 		return $this->gdoTable()->
 		select('gdo_guestbookmessage.*')->
